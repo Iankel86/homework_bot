@@ -5,7 +5,6 @@ import time
 import requests
 import telegram
 import settings
-# from .settings import RETRY_TIME
 
 from dotenv import load_dotenv
 from http import HTTPStatus
@@ -18,21 +17,9 @@ PRACTICUM_TOKEN = os.getenv('PRACTICUM_TOKEN')
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 
-# PRACTICUM_TOKEN = 'AQAAAABbscPSAAYckRyyz4hf00aei3_VpBYOGJE'
-# TELEGRAM_TOKEN = '5299797872:AAHECGc7Ihyw_6k-7isDZOBM4H_O_cvjQ20'
-# TELEGRAM_CHAT_ID = '329734189'
 
-# RETRY_TIME = settings.RETRY_TIME
-# RETRY_TIME = 600
 ENDPOINT = 'https://practicum.yandex.ru/api/user_api/homework_statuses/'
 HEADERS = {'Authorization': f'OAuth {PRACTICUM_TOKEN}'}
-
-
-HOMEWORK_STATUSES = {
-    'approved': 'Работа проверена: ревьюеру всё понравилось. Ура!',
-    'reviewing': 'Работа взята на проверку ревьюером.',
-    'rejected': 'Работа проверена: у ревьюера есть замечания.'
-}
 
 
 def send_message(bot, message):
@@ -49,7 +36,9 @@ def get_api_answer(current_timestamp):
     timestamp = current_timestamp or int(time.time())
     params = {'from_date': timestamp}
     try:
-        response = requests.get(ENDPOINT, headers=HEADERS, params=params)
+        response = requests.get(ENDPOINT,
+                                headers=HEADERS,
+                                params=params)
         if response.status_code != HTTPStatus.OK:
             raise requests.HTTPError(response)
         return response.json()
@@ -64,44 +53,45 @@ def check_response(response):
     """Проверяем данные в response."""
     if not isinstance(response, dict):
         raise TypeError('Ответ получен не в виде словаря')
-    key = 'homeworks'
-    if key not in response:
-        raise KeyError(f'В response нет ключа {key}')
-    if not isinstance(response[key], list):
+    if 'homeworks' not in response:
+        raise KeyError('В response нет ключа homeworks')
+    if not isinstance(response['homeworks'], list):
         raise TypeError('Домашняя работа получена не в виде списка')
-    return response[key]
+    return response['homeworks']
 
 
 def parse_status(homework):
     """Информация о статусе работы ."""
     if not isinstance(homework, dict):
         raise TypeError('Формат ответа API отличается от ожидаемого')
-    try:
-        homework_name = homework['homework_name']
-        homework_status = homework['status']
-    except KeyError as error:
-        raise KeyError(f'В словаре домашней работы нет ключа {error}')
-    if homework_status not in HOMEWORK_STATUSES:
+    if 'homework_name' not in homework:
+        raise KeyError('Ошибка с ключем homework_name')
+    homework_name = homework['homework_name']
+    if 'status' not in homework:
+        raise KeyError('Ошибка с ключем status')
+    homework_status = homework['status']
+    if homework_status not in settings.HOMEWORK_STATUSES:
         raise KeyError(('Недокументированный статус домашней '
                         f'работы: {homework_status}'))
-    verdict = HOMEWORK_STATUSES[homework_status]
+    verdict = settings.HOMEWORK_STATUSES[homework_status]
     return f'Изменился статус проверки работы "{homework_name}". {verdict}'
 
 
 def check_tokens():
     """Проверка наличия токенов."""
-    if PRACTICUM_TOKEN is None:
-        logging.error('Переменная PRACTICUM_TOKEN не задана.')
-        return False
-    if TELEGRAM_TOKEN is None:
-        logging.error('Переменная TELEGRAM_TOKEN не задана.')
-        return False
-    if TELEGRAM_CHAT_ID is None:
-        logging.error('Переменная TELEGRAM_CHAT_ID не задана.')
-        return False
-    else:
-        logging.info('Проверка переменных прошла успешна.')
+    if all([PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID]):
         return True
+    else:
+        if PRACTICUM_TOKEN is None:
+            logger.critical(
+                'отсутствует переменная окружения: PRACTICUM_TOKEN')
+        if TELEGRAM_TOKEN is None:
+            logger.critical(
+                'отсутствует переменная окружения: TELEGRAM_TOKEN')
+        if TELEGRAM_CHAT_ID is None:
+            logger.critical(
+                'отсутствует переменная окружения: TELEGRAM_CHAT_ID')
+    return False
 
 
 def main():
