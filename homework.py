@@ -84,13 +84,13 @@ def check_tokens():
     else:
         if PRACTICUM_TOKEN is None:
             logger.critical(
-                'отсутствует переменная окружения: PRACTICUM_TOKEN')
+                'Переменная PRACTICUM_TOKEN не задана.')
         if TELEGRAM_TOKEN is None:
             logger.critical(
-                'отсутствует переменная окружения: TELEGRAM_TOKEN')
+                'Переменная TELEGRAM_TOKEN не задана.')
         if TELEGRAM_CHAT_ID is None:
             logger.critical(
-                'отсутствует переменная окружения: TELEGRAM_CHAT_ID')
+                'Переменная TELEGRAM_CHAT_ID не задана.')
     return False
 
 
