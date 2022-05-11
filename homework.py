@@ -94,7 +94,7 @@ def main():
         logger.critical('Нет обязательных переменных окружения!')
         return
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
-    current_timestamp = int(time.time() - 11000500)
+    current_timestamp = int(time.time())
     while True:
         try:
             response = get_api_answer(current_timestamp)
