@@ -9,7 +9,7 @@ import settings
 from dotenv import load_dotenv
 from http import HTTPStatus
 # from settings import ENDPOINT, HEADERS
-# from constants import ENDPOINT
+from constants import ENDPOINT
 # from constants import HEADERS
 # - перепробывал все возможные варианты, начал еще с 10.05.2022
 # даже отдельно создал файл, думал в settings может нельзя,но все равно ошибка:
@@ -24,7 +24,7 @@ TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 
 
-ENDPOINT = 'https://practicum.yandex.ru/api/user_api/homework_statuses/'
+# ENDPOINT = 'https://practicum.yandex.ru/api/user_api/homework_statuses/'
 HEADERS = {'Authorization': f'OAuth {PRACTICUM_TOKEN}'}
 
 
@@ -86,7 +86,6 @@ def parse_status(homework):
 def check_tokens():
     """Проверка наличия токенов."""
     return all([PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID])
-# а вот это круто сократилось
 
 
 def main():
