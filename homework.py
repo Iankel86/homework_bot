@@ -8,6 +8,12 @@ import settings
 
 from dotenv import load_dotenv
 from http import HTTPStatus
+# from settings import ENDPOINT, HEADERS
+# from constants import ENDPOINT
+# from constants import HEADERS
+# - перепробывал все возможные варианты, начал еще с 10.05.2022
+# даже отдельно создал файл, думал в settings может нельзя,но все равно ошибка:
+# Проблема с работой. Ошибка хаха при запросе к эндпойнту: <Response [401]>
 
 load_dotenv()
 
@@ -43,7 +49,7 @@ def get_api_answer(current_timestamp):
             raise requests.HTTPError(response)
         return response.json()
     except requests.exceptions.RequestException as error:
-        raise Exception(f'Ошибка при запросе к эндпойнту: {error}')
+        raise Exception(f'хаха при запросе к эндпойнту: {error}')
     except json.decoder.JSONDecodeError as error:
         raise Exception((f'Ответ {response.text} получен не в виде JSON: '
                          f'{error}'))
@@ -73,34 +79,23 @@ def parse_status(homework):
     if homework_status not in settings.HOMEWORK_STATUSES:
         raise KeyError(('Недокументированный статус домашней '
                         f'работы: {homework_status}'))
-    verdict = settings.HOMEWORK_STATUSES[homework_status]
+    verdict = settings.HOMEWORK_STATUSES.get(homework_status)
     return f'Изменился статус проверки работы "{homework_name}". {verdict}'
 
 
 def check_tokens():
     """Проверка наличия токенов."""
-    if all([PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID]):
-        return True
-    else:
-        if PRACTICUM_TOKEN is None:
-            logger.critical(
-                'Переменная PRACTICUM_TOKEN не задана.')
-        if TELEGRAM_TOKEN is None:
-            logger.critical(
-                'Переменная TELEGRAM_TOKEN не задана.')
-        if TELEGRAM_CHAT_ID is None:
-            logger.critical(
-                'Переменная TELEGRAM_CHAT_ID не задана.')
-    return False
+    return all([PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID])
+# а вот это круто сократилось
 
 
 def main():
     """Основная логика работы бота."""
     if not check_tokens():
-        logger.critical('Отсутствуют обязательные переменные окружения!')
+        logger.critical('Нет обязательных переменных окружения!')
         return
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
-    current_timestamp = int(time.time())
+    current_timestamp = int(time.time() - 11000500)
     while True:
         try:
             response = get_api_answer(current_timestamp)
@@ -111,7 +106,7 @@ def main():
                 message = parse_status(homework)
                 send_message(bot, message)
                 logger.info(('Сообщение отправленно в телеграм: '
-                             f'{message}'))
+                            f'{message}'))
             current_timestamp = response.get('current_date', current_timestamp)
         except Exception as error:
             message = f'Сбой в работе программы: {error}'
