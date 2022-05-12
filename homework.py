@@ -8,12 +8,6 @@ import settings
 
 from dotenv import load_dotenv
 from http import HTTPStatus
-# from settings import ENDPOINT, HEADERS
-from constants import ENDPOINT
-# from constants import HEADERS
-# - перепробывал все возможные варианты, начал еще с 10.05.2022
-# даже отдельно создал файл, думал в settings может нельзя,но все равно ошибка:
-# Проблема с работой. Ошибка хаха при запросе к эндпойнту: <Response [401]>
 
 load_dotenv()
 
@@ -23,8 +17,6 @@ PRACTICUM_TOKEN = os.getenv('PRACTICUM_TOKEN')
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 
-
-# ENDPOINT = 'https://practicum.yandex.ru/api/user_api/homework_statuses/'
 HEADERS = {'Authorization': f'OAuth {PRACTICUM_TOKEN}'}
 
 
@@ -42,7 +34,7 @@ def get_api_answer(current_timestamp):
     timestamp = current_timestamp or int(time.time())
     params = {'from_date': timestamp}
     try:
-        response = requests.get(ENDPOINT,
+        response = requests.get(settings.ENDPOINT,
                                 headers=HEADERS,
                                 params=params)
         if response.status_code != HTTPStatus.OK:
@@ -94,7 +86,7 @@ def main():
         logger.critical('Нет обязательных переменных окружения!')
         return
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
-    current_timestamp = int(time.time())
+    current_timestamp = int(time.time() - 111005000)
     while True:
         try:
             response = get_api_answer(current_timestamp)
