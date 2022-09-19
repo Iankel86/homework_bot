@@ -16,21 +16,21 @@ Telegram-бот для оповещения об изменении статус
 Для прочих инструментов используйте аналоги команд для вашего окружения.
 
 1. Клонируйте репозиторий и перейдите в него в командной строке:
-git clone https://github.com/Banes31/homework_bot.git
-cd homework_bot
+- git clone (https://github.com/Iankel86/homework_bot.git)
+- cd homework_bot
 2. Установите и активируйте виртуальное окружение
-python -m venv venv
-source venv/Scripts/activate
+- python -m venv venv
+- source venv/Scripts/activate
 3. Установите зависимости из файла requirements.txt
-pip install -r requirements.txt
+- pip install -r requirements.txt
 4. В консоле импортируйте токены для Яндекс.Практикум и Телеграмм:
-export PRACTICUM_TOKEN=<PRACTICUM_TOKEN>
-export TELEGRAM_TOKEN=<TELEGRAM_TOKEN>
-export CHAT_ID=<CHAT_ID>
+- export PRACTICUM_TOKEN=<PRACTICUM_TOKEN>
+- export TELEGRAM_TOKEN=<TELEGRAM_TOKEN>
+- export CHAT_ID=<CHAT_ID>
 5. Запустите бота, выполнив команду:
-python homework.py
+- python homework.py
 6. Деактивируйте виртуальное окружение (после работы), выполнив команду:
-deactivate
+- deactivate
 
 ### Автор
 [Шадрин Ян](https://github.com/Iankel86)
